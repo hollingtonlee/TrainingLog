@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Training Log — User Guide</title>
+<style>
+  :root{
+    --bg:#101214;
+    --surface:#1B1E22;
+    --surface-2:#23272C;
+    --border:#3C4046;
+    --ink:#FFFFFF;
+    --ink-dim:#D2D6DB;
+    --ink-faint:#9BA0A6;
+    --steel:#8FCBEF;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink-dim);
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height:1.55;
+  }
+  .wrap{
+    max-width:680px;
+    margin:0 auto;
+    padding:48px 24px 80px;
+  }
+  .eyebrow{
+    color:var(--steel);
+    font-size:13px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin-bottom:6px;
+  }
+  h1{
+    color:var(--ink);
+    font-size:34px;
+    margin:0 0 6px;
+  }
+  .tagline{
+    color:var(--ink-faint);
+    font-size:15px;
+    margin-bottom:8px;
+  }
+  h2{
+    color:var(--ink);
+    font-size:20px;
+    margin:36px 0 12px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--border);
+  }
+  p{margin:0 0 12px;}
+  ul{margin:0 0 14px; padding-left:22px;}
+  li{margin-bottom:8px;}
+  b, strong{color:var(--ink); font-weight:600;}
+  code{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--ink);
+    padding:1px 6px;
+    border-radius:5px;
+    font-size:0.92em;
+  }
+  hr{border:none; border-top:1px solid var(--border); margin:40px 0;}
+  .footer{color:var(--ink-faint); font-size:13px; text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Training Log</div>
+  <h1>User Guide</h1>
+  <div class="tagline">A quick reference for everything the app can do.</div>
+
+  <h2>Logging a Session</h2>
+  <p>Tap <b>+ Add workout</b> and fill in:</p>
+  <ul>
+    <li>Name — e.g. "Chest Press" or "Indoor Bike"</li>
+    <li>Category — Strength, Cardio, Mobility, or Other</li>
+    <li>Date, Duration, and Body weight (optional)</li>
+    <li>Sets / Reps</li>
+    <li>Weight/Distance — a number plus a unit dropdown (lbs, kg, miles, meters, or yds). Use it for weight lifted or distance covered — e.g. <code>2100</code> + <code>meters</code> for rowing.</li>
+    <li>Notes</li>
+  </ul>
+  <p>Tap <b>📋 Copy from previous</b> inside the form to pre-fill everything from something you've logged before, then just adjust the date.</p>
+
+  <h2>Editing or Deleting a Session</h2>
+  <p>Tap any entry in your log to open it for editing. A red <b>Delete entry</b> button sits at the bottom of that screen.</p>
+  <p>To delete an entire day at once, tap the <b>🗑</b> icon next to that day's heading (TODAY, YESTERDAY, etc.). You'll get a confirmation first — this can't be undone.</p>
+
+  <h2>Weight Session Checklist 🏋️</h2>
+  <p>For gym days with many exercises, tap the <b>🏋️</b> icon in the header instead of logging each one through the form.</p>
+  <ul>
+    <li>Check a box → instantly logs that exercise to today with its saved weight/sets/reps.</li>
+    <li>Uncheck → removes that logged entry.</li>
+    <li>Reopen later the same day → already-checked items stay checked, so you can pick up mid-session.</li>
+    <li>Tap <b>✎</b> next to any exercise to edit its weight, sets, reps, or remove it from the list.</li>
+    <li><b>+ Add exercise</b> adds a new move to your checklist.</li>
+  </ul>
+  <p>This list is a reusable template, separate from your actual log — checking it off doesn't use it up.</p>
+
+  <h2>Reading Your Log</h2>
+  <ul>
+    <li>Days with more than one session get a vertical line connecting them, so you can see at a glance you did several things that day.</li>
+    <li>A day with 2+ exercises logged via the weights checklist collapses into one row: "🏋️ Weight session · N exercises." Tap it to expand or collapse.</li>
+    <li>Tap <b>Newest first / Oldest first</b> to flip the sort order.</li>
+    <li>The stats bar shows sessions in the last 7 days, hours this month, and your current day streak.</li>
+    <li>Tap <b>📊</b> for a fuller summary broken down by period.</li>
+  </ul>
+
+  <h2>Profiles</h2>
+  <p>Tap the <b>Me ▾</b> chip under the title to switch between or create separate training logs — handy if more than one person shares the app.</p>
+
+  <h2>Backup &amp; Restore</h2>
+  <p>Tap <b>Backup</b> to:</p>
+  <ul>
+    <li>Export your full log as a JSON file — do this regularly, especially before switching devices.</li>
+    <li>Restore from backup by choosing a previously exported JSON file. New entries are added; anything you already have is skipped, so it's safe to re-import.</li>
+  </ul>
+  <p>If you haven't backed up in a while (or ever), the app will pop the backup screen open automatically when you launch it, as a friendly reminder.</p>
+
+  <h2>Appearance</h2>
+  <p>Tap <b>🎨</b> to change the app's color theme.</p>
+
+  <hr>
+  <div class="footer">Training Log</div>
+</div>
+</body>
+</html>
