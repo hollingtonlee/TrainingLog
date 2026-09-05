@@ -145,6 +145,78 @@
     letter-spacing:0.6px;
   }
 
+  .day-entries{position:relative;}
+  .day-group.multi .day-entries::before{
+    content:'';
+    position:absolute;
+    left:8px;
+    top:0;
+    bottom:0;
+    width:3px;
+    border-radius:1.5px;
+    background:var(--ink);
+  }
+
+  .weight-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 0;
+    border-top:1px solid var(--border);
+  }
+  .weight-item:first-child{border-top:none;}
+  .weight-item-main{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex:1;
+    min-width:0;
+    cursor:pointer;
+  }
+  .weight-item-main input[type="checkbox"]{
+    width:22px;
+    height:22px;
+    flex-shrink:0;
+    accent-color:var(--steel);
+  }
+  .weight-item-text{
+    font-size:16px;
+    font-weight:500;
+    line-height:1.35;
+  }
+  .weight-item-meta{
+    color:var(--ink-dim);
+    font-weight:400;
+  }
+  .weight-item-edit{
+    background:none;
+    border:none;
+    color:var(--ink-faint);
+    font-size:16px;
+    flex-shrink:0;
+    padding:6px;
+  }
+
+  .weight-session-summary{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 20px;
+    border-top:1px solid var(--border);
+    font-size:15px;
+    font-weight:600;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .weight-session-summary:active{opacity:0.8;}
+  .weight-session-toggle{
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink-dim);
+    white-space:nowrap;
+    margin-left:12px;
+  }
+
   .entry{
     display:flex;
     align-items:flex-start;
@@ -316,6 +388,30 @@
   .row-inputs.cols3 input{margin-right:8px;}
   .row-inputs input:last-child{margin-right:0;}
   .row-inputs input:focus{outline:none; border-color:var(--steel);}
+
+  .wd-row{display:flex; gap:8px;}
+  .wd-row input{
+    flex:1;
+    min-width:0;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--ink);
+    padding:11px 12px;
+    border-radius:8px;
+    font-size:16.5px;
+    font-family:inherit;
+  }
+  .wd-row select{
+    flex:0 0 96px;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--ink);
+    padding:11px 6px;
+    border-radius:8px;
+    font-size:15px;
+    font-family:inherit;
+  }
+  .wd-row input:focus, .wd-row select:focus{outline:none; border-color:var(--steel);}
 
   .cat-select{
     display:flex;
@@ -682,21 +778,22 @@
 <body>
 
 <header>
-  <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-    <div>
-      <h1>Training Log</h1>
-      <button id="btnProfile" class="profile-chip">
-        <span class="profile-chip-avatar" id="profileAvatar">M</span>
-        <span class="profile-chip-text" id="profileChipName">Me</span>
-        <span class="profile-chip-arrow">▾</span>
-      </button>
-    </div>
-    <div style="display:flex; gap:8px; flex-shrink:0; margin-top:2px; flex-wrap:wrap; justify-content:flex-end;">
-      <button id="btnSummary" aria-label="View summary" style="background:var(--surface-2); border:1px solid var(--border); color:var(--ink); font-size:16px; font-weight:600; width:38px; height:38px; border-radius:8px; font-family:inherit; display:flex; align-items:center; justify-content:center;">📊</button>
-      <button id="btnTheme" aria-label="Change color palette" style="background:var(--surface-2); border:1px solid var(--border); color:var(--ink); font-size:17px; font-weight:600; width:38px; height:38px; border-radius:8px; font-family:inherit; display:flex; align-items:center; justify-content:center;">🎨</button>
-      <button id="btnAddTop" style="background:var(--steel); border:none; color:var(--on-accent); font-size:13.5px; font-weight:600; padding:8px 14px; border-radius:8px; font-family:inherit;">+ Add workout</button>
-      <button id="btnBackup" style="background:var(--surface-2); border:1px solid var(--border); color:var(--ink); font-size:13.5px; font-weight:600; padding:8px 14px; border-radius:8px; font-family:inherit;">Backup</button>
-    </div>
+  <h1>Training Log</h1>
+  <button id="btnProfile" class="profile-chip">
+    <span class="profile-chip-avatar" id="profileAvatar">M</span>
+    <span class="profile-chip-text" id="profileChipName">Me</span>
+    <span class="profile-chip-arrow">▾</span>
+  </button>
+
+  <div style="display:flex; gap:8px; margin-top:14px;">
+    <button id="btnAddTop" style="flex:1; background:var(--steel); border:none; color:var(--on-accent); font-size:15px; font-weight:600; padding:11px 14px; border-radius:8px; font-family:inherit;">+ Add workout</button>
+    <button id="btnBackup" style="flex:1; background:var(--surface-2); border:1px solid var(--border); color:var(--ink); font-size:15px; font-weight:600; padding:11px 14px; border-radius:8px; font-family:inherit;">Backup</button>
+  </div>
+
+  <div style="display:flex; gap:8px; margin-top:8px;">
+    <button id="btnWeights" aria-label="Weight session checklist" style="background:var(--surface-2); border:1px solid var(--border); color:var(--ink); font-size:16px; font-weight:600; width:38px; height:38px; border-radius:8px; font-family:inherit; display:flex; align-items:center; justify-content:center;">🏋️</button>
+    <button id="btnSummary" aria-label="View summary" style="background:var(--surface-2); border:1px solid var(--border); color:var(--ink); font-size:16px; font-weight:600; width:38px; height:38px; border-radius:8px; font-family:inherit; display:flex; align-items:center; justify-content:center;">📊</button>
+    <button id="btnTheme" aria-label="Change color palette" style="background:var(--surface-2); border:1px solid var(--border); color:var(--ink); font-size:17px; font-weight:600; width:38px; height:38px; border-radius:8px; font-family:inherit; display:flex; align-items:center; justify-content:center;">🎨</button>
   </div>
 </header>
 
@@ -761,16 +858,28 @@
     </div>
   </div>
 
-  <div class="row3">
-    <div class="row-labels cols3">
+  <div class="row2">
+    <div class="row-labels cols2">
       <label>Sets</label>
       <label>Reps</label>
-      <label>Weight (lb/kg)</label>
     </div>
-    <div class="row-inputs cols3">
+    <div class="row-inputs cols2">
       <input type="number" id="fSets" placeholder="optional" min="0">
       <input type="number" id="fReps" placeholder="optional" min="0">
-      <input type="number" id="fWeight" placeholder="optional" min="0">
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Weight/Distance</label>
+    <div class="wd-row">
+      <input type="number" id="fWeight" placeholder="optional" min="0" step="any">
+      <select id="fWeightUnit">
+        <option value="lbs">lbs</option>
+        <option value="kg">kg</option>
+        <option value="miles">miles</option>
+        <option value="meters">meters</option>
+        <option value="yds">yds</option>
+      </select>
     </div>
   </div>
 
@@ -811,12 +920,67 @@
       Choose a JSON backup file exported from this app. New entries are added; entries you already have are skipped.
     </div>
     <input type="file" id="fileImport" accept="application/json,.json" style="display:none;">
-    <button class="btn btn-secondary" id="btnImport" style="width:100%;">Choose backup file…</button>
+    <label for="fileImport" id="btnImport" class="btn btn-secondary" style="width:100%; display:block; text-align:center; box-sizing:border-box; cursor:pointer;">Choose backup file…</label>
     <div id="importStatus" style="font-size:12.5px; color:var(--steel); margin-top:8px; min-height:16px;"></div>
   </div>
 
   <div class="sheet-actions" style="margin-top:18px;">
     <button class="btn btn-secondary" id="btnCloseBackup" style="flex:none; width:100%;">Close</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="overlayWeights"></div>
+<div class="sheet" id="sheetWeights">
+  <div class="sheet-handle"></div>
+  <h2>Weight session</h2>
+  <div style="color:var(--ink-dim); font-size:14px; line-height:1.5; margin-bottom:4px;">
+    Check off each move as you go — it logs to today automatically. Tap ✎ to edit weight or reps.
+  </div>
+
+  <div id="weightList" style="margin-top:10px;"></div>
+
+  <button type="button" id="btnAddWeightItem" class="btn btn-secondary" style="width:100%; margin-top:14px;">+ Add exercise</button>
+
+  <div id="weightItemForm" style="display:none; margin-top:18px; padding-top:18px; border-top:1px solid var(--border);">
+    <div style="font-weight:600; font-size:15px; margin-bottom:12px;" id="weightFormTitle">Add exercise</div>
+    <div class="field">
+      <label>Exercise</label>
+      <input type="text" id="wfName" placeholder="e.g. Seated Crunch">
+    </div>
+    <div class="row2">
+      <div class="row-labels cols2">
+        <label>Sets</label>
+        <label>Reps</label>
+      </div>
+      <div class="row-inputs cols2">
+        <input type="number" id="wfSets" placeholder="3" min="0">
+        <input type="number" id="wfReps" placeholder="12" min="0">
+      </div>
+    </div>
+    <div class="field">
+      <label>Weight/Distance</label>
+      <div class="wd-row">
+        <input type="number" id="wfWeight" placeholder="optional" min="0" step="any">
+        <select id="wfWeightUnit">
+          <option value="lbs">lbs</option>
+          <option value="kg">kg</option>
+          <option value="miles">miles</option>
+          <option value="meters">meters</option>
+          <option value="yds">yds</option>
+        </select>
+      </div>
+    </div>
+    <div class="sheet-actions">
+      <button type="button" class="btn btn-secondary" id="btnWeightFormCancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="btnWeightFormSave">Save</button>
+    </div>
+    <div class="sheet-actions" id="weightDeleteRow" style="display:none; margin-top:8px;">
+      <button type="button" class="btn btn-delete" id="btnWeightDelete">Remove from list</button>
+    </div>
+  </div>
+
+  <div class="sheet-actions" style="margin-top:18px;">
+    <button class="btn btn-secondary" id="btnCloseWeights" style="flex:none; width:100%;">Done</button>
   </div>
 </div>
 
@@ -899,6 +1063,7 @@ let selectedCat = 'strength';
 let currentTheme = 'gunmetal';
 let sortOrder = 'desc';
 let lastBackupAt = null;
+let backupReminderShown = false;
 let profiles = [];
 let activeProfileId = null;
 let summaryPeriod = 'week';
@@ -1232,10 +1397,13 @@ function updateBackupBanner(){
   const sheetStatus = $('backupSheetStatus');
   if(!banner) return;
 
+  const overdue = !lastBackupAt || (Date.now() - new Date(lastBackupAt).getTime()) >= 7*86400000;
+
   if(sheetStatus){
     sheetStatus.textContent = lastBackupAt
       ? `Last backup: ${fmtBackupWhen(lastBackupAt)}`
       : "You haven't backed up yet.";
+    sheetStatus.style.color = overdue ? 'var(--danger)' : 'var(--steel)';
   }
 
   if(entries.length === 0){
@@ -1254,6 +1422,15 @@ function updateBackupBanner(){
   } else {
     banner.style.display = 'none';
   }
+}
+
+function maybeShowBackupReminder(){
+  if(backupReminderShown) return;
+  if(entries.length === 0) return;
+  const overdue = !lastBackupAt || (Date.now() - new Date(lastBackupAt).getTime()) >= 7*86400000;
+  if(!overdue) return;
+  backupReminderShown = true;
+  openBackupSheet();
 }
 
 function entriesKey(profileId){
@@ -1276,6 +1453,189 @@ async function saveEntries(){
   }catch(e){
     console.error('Storage save failed', e);
   }
+}
+
+// ---- weight session checklist ----
+
+let weightTemplate = [];
+let weightChecklistLoggedMap = {};
+let editingWeightItemId = null;
+
+function weightTemplateKey(profileId){
+  return 'weight-tmpl:' + profileId;
+}
+
+function unitLabel(u){
+  const map = {lbs:'lbs', kg:'kg', miles:'mi', meters:'m', yds:'yd'};
+  return map[u] || 'lbs';
+}
+
+function defaultWeightTemplate(){
+  return [
+    {id:uid(), name:'Seated Crunch', weight:100, unit:'lbs', sets:3, reps:10},
+    {id:uid(), name:'Hanging Leg Lifts', weight:null, unit:'lbs', sets:3, reps:12},
+    {id:uid(), name:'Tricep machine', weight:100, unit:'lbs', sets:3, reps:12},
+    {id:uid(), name:'Seated Bicep Curl', weight:17.5, unit:'lbs', sets:3, reps:12},
+    {id:uid(), name:'Seated row', weight:85, unit:'lbs', sets:3, reps:12},
+    {id:uid(), name:'Chest Press', weight:85, unit:'lbs', sets:3, reps:10},
+    {id:uid(), name:'Shoulder Press', weight:45, unit:'lbs', sets:3, reps:12},
+    {id:uid(), name:'Assisted Dips', weight:80, unit:'lbs', sets:3, reps:12},
+    {id:uid(), name:'Assisted Pullups', weight:100, unit:'lbs', sets:3, reps:12}
+  ];
+}
+
+async function loadWeightTemplate(){
+  try{
+    const res = await storageGet(weightTemplateKey(activeProfileId), false);
+    if(res && res.value){
+      weightTemplate = JSON.parse(res.value);
+    } else {
+      weightTemplate = defaultWeightTemplate();
+      await saveWeightTemplate();
+    }
+  }catch(e){
+    weightTemplate = [];
+  }
+}
+
+async function saveWeightTemplate(){
+  try{
+    await storageSet(weightTemplateKey(activeProfileId), JSON.stringify(weightTemplate), false);
+  }catch(e){
+    console.error('Weight template save failed', e);
+  }
+}
+
+function formatTemplateMeta(item){
+  const parts = [];
+  if(item.weight != null && item.weight !== '') parts.push(`${item.weight} ${unitLabel(item.unit)}`);
+  if(item.sets && item.reps) parts.push(`${item.sets}×${item.reps}`);
+  return parts.length ? `(${parts.join(', ')})` : '';
+}
+
+function findTodayEntryByName(name){
+  const today = todayISO();
+  const key = name.trim().toLowerCase();
+  return entries.find(e => e.date === today && e.name.trim().toLowerCase() === key);
+}
+
+async function openWeightsSheet(){
+  await loadWeightTemplate();
+  weightChecklistLoggedMap = {};
+  weightTemplate.forEach(item => {
+    const match = findTodayEntryByName(item.name);
+    if(match) weightChecklistLoggedMap[item.id] = match.id;
+  });
+  cancelWeightItemEdit();
+  renderWeightChecklist();
+  $('overlayWeights').classList.add('open');
+  $('sheetWeights').classList.add('open');
+}
+function closeWeightsSheet(){
+  $('overlayWeights').classList.remove('open');
+  $('sheetWeights').classList.remove('open');
+}
+
+function renderWeightChecklist(){
+  const container = $('weightList');
+  if(weightTemplate.length === 0){
+    container.innerHTML = `<div style="padding:16px 0; color:var(--ink-dim); font-size:14px; text-align:center;">No exercises yet — add your first move below.</div>`;
+    return;
+  }
+  container.innerHTML = weightTemplate.map(item => {
+    const checked = !!weightChecklistLoggedMap[item.id];
+    const meta = formatTemplateMeta(item);
+    return `
+      <div class="weight-item">
+        <label class="weight-item-main">
+          <input type="checkbox" data-id="${item.id}" ${checked ? 'checked' : ''}>
+          <span class="weight-item-text">${escapeHtml(item.name)}${meta ? ' <span class="weight-item-meta">'+escapeHtml(meta)+'</span>' : ''}</span>
+        </label>
+        <button type="button" class="weight-item-edit" data-id="${item.id}" aria-label="Edit exercise">✎</button>
+      </div>`;
+  }).join('');
+
+  container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', () => toggleWeightItem(cb.dataset.id, cb.checked));
+  });
+  container.querySelectorAll('.weight-item-edit').forEach(btn => {
+    btn.addEventListener('click', () => openWeightItemForm(btn.dataset.id));
+  });
+}
+
+async function toggleWeightItem(itemId, checked){
+  const item = weightTemplate.find(i => i.id === itemId);
+  if(!item) return;
+  if(checked){
+    const newEntry = {
+      id: uid(),
+      name: item.name,
+      category: 'strength',
+      date: todayISO(),
+      duration: null,
+      weight: item.weight != null ? item.weight : null,
+      weightUnit: item.unit || 'lbs',
+      sets: item.sets != null ? item.sets : null,
+      reps: item.reps != null ? item.reps : null,
+      bodyWeight: null,
+      notes: '',
+      fromWeightChecklist: true
+    };
+    entries.push(newEntry);
+    weightChecklistLoggedMap[itemId] = newEntry.id;
+    await saveEntries();
+  } else {
+    const entryId = weightChecklistLoggedMap[itemId];
+    if(entryId){
+      entries = entries.filter(e => e.id !== entryId);
+      delete weightChecklistLoggedMap[itemId];
+      await saveEntries();
+    }
+  }
+  render();
+}
+
+function openWeightItemForm(itemId){
+  editingWeightItemId = itemId || null;
+  const item = itemId ? weightTemplate.find(i => i.id === itemId) : null;
+  $('wfName').value = item ? item.name : '';
+  $('wfWeight').value = item && item.weight != null ? item.weight : '';
+  $('wfWeightUnit').value = item && item.unit ? item.unit : 'lbs';
+  $('wfSets').value = item && item.sets != null ? item.sets : 3;
+  $('wfReps').value = item && item.reps != null ? item.reps : 12;
+  $('weightFormTitle').textContent = item ? 'Edit exercise' : 'Add exercise';
+  $('weightDeleteRow').style.display = item ? 'block' : 'none';
+  $('weightItemForm').style.display = 'block';
+  $('wfName').focus();
+}
+function cancelWeightItemEdit(){
+  editingWeightItemId = null;
+  $('weightItemForm').style.display = 'none';
+}
+async function saveWeightItemForm(){
+  const name = $('wfName').value.trim();
+  if(!name) return;
+  const weight = $('wfWeight').value ? Number($('wfWeight').value) : null;
+  const unit = $('wfWeightUnit').value;
+  const sets = $('wfSets').value ? Number($('wfSets').value) : null;
+  const reps = $('wfReps').value ? Number($('wfReps').value) : null;
+  if(editingWeightItemId){
+    const item = weightTemplate.find(i => i.id === editingWeightItemId);
+    if(item){ item.name = name; item.weight = weight; item.unit = unit; item.sets = sets; item.reps = reps; }
+  } else {
+    weightTemplate.push({id: uid(), name, weight, unit, sets, reps});
+  }
+  await saveWeightTemplate();
+  cancelWeightItemEdit();
+  renderWeightChecklist();
+}
+async function deleteWeightItemForm(){
+  if(!editingWeightItemId) return;
+  weightTemplate = weightTemplate.filter(i => i.id !== editingWeightItemId);
+  delete weightChecklistLoggedMap[editingWeightItemId];
+  await saveWeightTemplate();
+  cancelWeightItemEdit();
+  renderWeightChecklist();
 }
 
 // ---- profiles ----
@@ -1523,6 +1883,27 @@ function renderStats(){
   `;
 }
 
+let expandedWeightDays = new Set();
+
+function renderEntryRow(e){
+  const metaParts = [];
+  if(e.sets && e.reps) metaParts.push(`${e.sets}×${e.reps}`);
+  if(e.weight) metaParts.push(`${e.weight} ${unitLabel(e.weightUnit)}`);
+  if(e.bodyWeight) metaParts.push(`BW ${e.bodyWeight}`);
+  return `
+    <div class="entry" data-id="${e.id}">
+      <div class="bar ${e.category}"></div>
+      <div class="entry-body">
+        <div class="entry-top">
+          <div class="entry-name">${escapeHtml(e.name)}</div>
+          <div class="entry-duration num">${e.duration ? e.duration+' min' : ''}</div>
+        </div>
+        <div class="entry-meta">${metaParts.join(' · ')}</div>
+        ${e.notes ? `<div class="entry-notes">${escapeHtml(e.notes)}</div>` : ''}
+      </div>
+    </div>`;
+}
+
 function render(){
   const main = $('main');
   const empty = $('emptyState');
@@ -1550,26 +1931,28 @@ function render(){
 
   let html = '';
   Object.keys(groups).forEach(date => {
-    html += `<div class="day-group"><div class="day-heading">${fmtDateHeading(date)}</div>`;
-    groups[date].forEach(e => {
-      const metaParts = [];
-      if(e.sets && e.reps) metaParts.push(`${e.sets}×${e.reps}`);
-      if(e.weight) metaParts.push(`${e.weight} lb/kg`);
-      if(e.bodyWeight) metaParts.push(`BW ${e.bodyWeight}`);
-      html += `
-        <div class="entry" data-id="${e.id}">
-          <div class="bar ${e.category}"></div>
-          <div class="entry-body">
-            <div class="entry-top">
-              <div class="entry-name">${escapeHtml(e.name)}</div>
-              <div class="entry-duration num">${e.duration ? e.duration+' min' : ''}</div>
-            </div>
-            <div class="entry-meta">${metaParts.join(' · ')}</div>
-            ${e.notes ? `<div class="entry-notes">${escapeHtml(e.notes)}</div>` : ''}
-          </div>
-        </div>`;
-    });
-    html += `</div>`;
+    const dayEntries = groups[date];
+    const isMulti = dayEntries.length > 1;
+    const weightEntries = dayEntries.filter(e => e.fromWeightChecklist);
+    const otherEntries = dayEntries.filter(e => !e.fromWeightChecklist);
+    const isExpanded = expandedWeightDays.has(date);
+
+    html += `<div class="day-group${isMulti ? ' multi' : ''}"><div class="day-heading">${fmtDateHeading(date)}</div><div class="day-entries">`;
+
+    otherEntries.forEach(e => { html += renderEntryRow(e); });
+
+    if(weightEntries.length === 1){
+      html += renderEntryRow(weightEntries[0]);
+    } else if(weightEntries.length > 1){
+      if(isExpanded){
+        html += `<div class="weight-session-summary" data-date="${date}">🏋️ Weight session · ${weightEntries.length} exercises<span class="weight-session-toggle">▴ Collapse</span></div>`;
+        weightEntries.forEach(e => { html += renderEntryRow(e); });
+      } else {
+        html += `<div class="weight-session-summary" data-date="${date}">🏋️ Weight session · ${weightEntries.length} exercises<span class="weight-session-toggle">▾ Expand</span></div>`;
+      }
+    }
+
+    html += `</div></div>`;
   });
 
   main.innerHTML = html;
@@ -1579,6 +1962,15 @@ function render(){
   main.querySelectorAll('.entry').forEach(el => {
     el.addEventListener('click', () => openEdit(el.dataset.id));
   });
+  main.querySelectorAll('.weight-session-summary').forEach(el => {
+    el.addEventListener('click', () => toggleWeightDayExpand(el.dataset.date));
+  });
+}
+
+function toggleWeightDayExpand(date){
+  if(expandedWeightDays.has(date)) expandedWeightDays.delete(date);
+  else expandedWeightDays.add(date);
+  render();
 }
 
 function escapeHtml(str){
@@ -1601,6 +1993,7 @@ function openAdd(){
   $('fDate').value = todayISO();
   $('fDuration').value = '';
   $('fWeight').value = '';
+  $('fWeightUnit').value = 'lbs';
   $('fSets').value = '';
   $('fReps').value = '';
   $('fBodyWeight').value = '';
@@ -1619,6 +2012,7 @@ function openEdit(id){
   $('fDate').value = e.date || todayISO();
   $('fDuration').value = e.duration || '';
   $('fWeight').value = e.weight || '';
+  $('fWeightUnit').value = e.weightUnit || 'lbs';
   $('fSets').value = e.sets || '';
   $('fReps').value = e.reps || '';
   $('fBodyWeight').value = e.bodyWeight || '';
@@ -1643,6 +2037,7 @@ async function saveEntry(){
     $('fName').focus();
     return;
   }
+  const existing = editingId ? entries.find(e => e.id === editingId) : null;
   const data = {
     id: editingId || uid(),
     name,
@@ -1650,11 +2045,13 @@ async function saveEntry(){
     date: $('fDate').value || todayISO(),
     duration: $('fDuration').value ? Number($('fDuration').value) : null,
     weight: $('fWeight').value ? Number($('fWeight').value) : null,
+    weightUnit: $('fWeightUnit').value,
     sets: $('fSets').value ? Number($('fSets').value) : null,
     reps: $('fReps').value ? Number($('fReps').value) : null,
     bodyWeight: $('fBodyWeight').value ? Number($('fBodyWeight').value) : null,
     notes: $('fNotes').value.trim()
   };
+  if(existing && existing.fromWeightChecklist) data.fromWeightChecklist = true;
 
   if(editingId){
     const idx = entries.findIndex(e => e.id === editingId);
@@ -1760,10 +2157,12 @@ function mergeEntriesInto(targetArray, incomingList){
       date: item.date,
       duration: item.duration != null ? Number(item.duration) : null,
       weight: item.weight != null ? Number(item.weight) : null,
+      weightUnit: item.weightUnit || 'lbs',
       sets: item.sets != null ? Number(item.sets) : null,
       reps: item.reps != null ? Number(item.reps) : null,
       bodyWeight: item.bodyWeight != null ? Number(item.bodyWeight) : null,
-      notes: item.notes || ''
+      notes: item.notes || '',
+      fromWeightChecklist: !!item.fromWeightChecklist
     });
     existingIds.add(id);
     added++;
@@ -1866,7 +2265,7 @@ function renderCopyList(filter){
   container.innerHTML = list.map(e => {
     const metaParts = [];
     if(e.sets && e.reps) metaParts.push(`${e.sets}×${e.reps}`);
-    if(e.weight) metaParts.push(`${e.weight} lb/kg`);
+    if(e.weight) metaParts.push(`${e.weight} ${unitLabel(e.weightUnit)}`);
     if(e.duration) metaParts.push(`${e.duration} min`);
     metaParts.push(`last ${fmtDateHeading(e.date).toLowerCase()}`);
     return `
@@ -1903,6 +2302,7 @@ function applyCopyEntry(key){
   $('fName').value = match.name;
   $('fDuration').value = match.duration != null ? match.duration : '';
   $('fWeight').value = match.weight != null ? match.weight : '';
+  $('fWeightUnit').value = match.weightUnit || 'lbs';
   $('fSets').value = match.sets != null ? match.sets : '';
   $('fReps').value = match.reps != null ? match.reps : '';
   $('fNotes').value = match.notes || '';
@@ -1927,7 +2327,6 @@ $('overlayBackup').addEventListener('click', closeBackupSheet);
 $('btnCloseBackup').addEventListener('click', closeBackupSheet);
 $('btnExportCsv').addEventListener('click', exportCsv);
 $('btnExportJson').addEventListener('click', exportJson);
-$('btnImport').addEventListener('click', () => $('fileImport').click());
 $('fileImport').addEventListener('change', handleImportFile);
 $('btnTheme').addEventListener('click', openThemeSheet);
 $('overlayTheme').addEventListener('click', closeThemeSheet);
@@ -1939,6 +2338,14 @@ $('btnCloseCopy').addEventListener('click', closeCopySheet);
 $('copySearch').addEventListener('input', () => renderCopyList($('copySearch').value));
 
 $('btnSortOrder').addEventListener('click', toggleSortOrder);
+
+$('btnWeights').addEventListener('click', openWeightsSheet);
+$('overlayWeights').addEventListener('click', closeWeightsSheet);
+$('btnCloseWeights').addEventListener('click', closeWeightsSheet);
+$('btnAddWeightItem').addEventListener('click', () => openWeightItemForm(null));
+$('btnWeightFormCancel').addEventListener('click', cancelWeightItemEdit);
+$('btnWeightFormSave').addEventListener('click', saveWeightItemForm);
+$('btnWeightDelete').addEventListener('click', deleteWeightItemForm);
 
 $('btnProfile').addEventListener('click', openProfileSheet);
 $('overlayProfile').addEventListener('click', closeProfileSheet);
@@ -1955,11 +2362,12 @@ $('btnRangePrev').addEventListener('click', () => shiftSummaryRange(-1));
 $('btnRangeNext').addEventListener('click', () => shiftSummaryRange(1));
 
 loadSortOrder();
-loadLastBackup();
 
 (async function initProfilesAndEntries(){
   await loadProfiles();
   await loadEntries();
+  await loadLastBackup();
+  maybeShowBackupReminder();
 })();
 </script>
 </body>
