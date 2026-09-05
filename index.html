@@ -2177,11 +2177,13 @@ async function exportJson(){
 
 function mergeEntriesInto(targetArray, incomingList){
   const existingIds = new Set(targetArray.map(e => e.id));
+  const templateNames = new Set(weightTemplate.map(t => t.name.trim().toLowerCase()));
   let added = 0;
   incomingList.forEach(item => {
     if(!item || typeof item !== 'object' || !item.name || !item.date) return;
     const id = item.id || uid();
     if(existingIds.has(id)) return;
+    const isWeightItem = !!item.fromWeightChecklist || templateNames.has(String(item.name).trim().toLowerCase());
     targetArray.push({
       id,
       name: String(item.name),
@@ -2194,7 +2196,7 @@ function mergeEntriesInto(targetArray, incomingList){
       reps: item.reps != null ? Number(item.reps) : null,
       bodyWeight: item.bodyWeight != null ? Number(item.bodyWeight) : null,
       notes: item.notes || '',
-      fromWeightChecklist: !!item.fromWeightChecklist
+      fromWeightChecklist: isWeightItem
     });
     existingIds.add(id);
     added++;
@@ -2211,6 +2213,7 @@ async function handleImportFile(evt){
   try{
     const text = await file.text();
     const parsed = JSON.parse(text);
+    await loadWeightTemplate();
 
     let totalAdded = 0;
     let profilesAdded = 0;
