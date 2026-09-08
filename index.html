@@ -118,19 +118,23 @@
   }
   .stat{
     flex:1;
+    min-width:0;
     background:var(--surface);
-    padding:14px 16px;
+    padding:12px 8px;
+    text-align:center;
   }
   .stat .val{
     font-family:'Oswald',sans-serif;
-    font-size:24px;
+    font-size:19px;
     font-weight:600;
     color:var(--steel);
+    white-space:nowrap;
   }
   .stat .lbl{
-    font-size:12.5px;
+    font-size:10.5px;
     color:var(--ink-dim);
     margin-top:2px;
+    line-height:1.25;
   }
 
   main{padding:8px 0 24px;}
@@ -234,6 +238,20 @@
     flex-shrink:0;
     padding:6px;
   }
+  .weight-item-actions{
+    display:flex;
+    align-items:center;
+    gap:2px;
+    flex-shrink:0;
+  }
+  .weight-item-delete{
+    background:none;
+    border:none;
+    color:var(--danger);
+    font-size:16px;
+    flex-shrink:0;
+    padding:6px;
+  }
 
   .weight-session-summary{
     display:flex;
@@ -264,6 +282,9 @@
     overflow-y:auto;
     z-index:80;
     display:none;
+    border-left:1px solid var(--border);
+    border-right:1px solid var(--border);
+    box-shadow:0 0 24px rgba(0,0,0,0.25);
   }
   .screen.open{ display:block; }
   .screen-head{
@@ -1177,7 +1198,7 @@
       <li>Check a box → instantly logs that exercise to today with its saved weight/sets/reps.</li>
       <li>Uncheck → removes that logged entry.</li>
       <li>Reopen later the same day → already-checked items stay checked, so you can pick up mid-session.</li>
-      <li>Tap <b>✎</b> next to any exercise to edit its weight, sets, reps, or remove it from the list.</li>
+      <li>Tap <b>✎</b> next to any exercise to edit its weight, sets, or reps. Tap <b>✕</b> to remove it from the list right away (with a quick confirmation).</li>
       <li><b>+ Add exercise</b> adds a new move to your checklist.</li>
     </ul>
     <p>This list is a reusable template, separate from your actual log — checking it off doesn't use it up.</p>
@@ -1189,7 +1210,7 @@
       <li>Tap the ▾/▸ arrow next to any day's heading to collapse or expand that whole day.</li>
       <li>Use <b>Expand all</b> / <b>Collapse all</b> above the list to do that for every day at once.</li>
       <li>Tap <b>Newest first / Oldest first</b> to flip the sort order.</li>
-      <li>The stats bar shows sessions in the last 7 days, hours this month, and your current day streak.</li>
+      <li>The stats bar shows sessions in the last 7 days, time logged this week and this month, and your current day streak.</li>
       <li>Tap <b>📊</b> for a fuller summary broken down by period.</li>
     </ul>
 
@@ -1710,7 +1731,10 @@ function renderWeightChecklist(){
           <input type="checkbox" data-id="${item.id}" ${checked ? 'checked' : ''}>
           <span class="weight-item-text">${escapeHtml(item.name)}${meta ? ' <span class="weight-item-meta">'+escapeHtml(meta)+'</span>' : ''}</span>
         </label>
-        <button type="button" class="weight-item-edit" data-id="${item.id}" aria-label="Edit exercise">✎</button>
+        <span class="weight-item-actions">
+          <button type="button" class="weight-item-edit" data-id="${item.id}" aria-label="Edit exercise">✎</button>
+          <button type="button" class="weight-item-delete" data-id="${item.id}" aria-label="Remove exercise">✕</button>
+        </span>
       </div>`;
   }).join('');
 
@@ -1719,6 +1743,9 @@ function renderWeightChecklist(){
   });
   container.querySelectorAll('.weight-item-edit').forEach(btn => {
     btn.addEventListener('click', () => openWeightItemForm(btn.dataset.id));
+  });
+  container.querySelectorAll('.weight-item-delete').forEach(btn => {
+    btn.addEventListener('click', () => deleteWeightItemDirect(btn.dataset.id));
   });
 }
 
@@ -1794,6 +1821,18 @@ async function deleteWeightItemForm(){
   delete weightChecklistLoggedMap[editingWeightItemId];
   await saveWeightTemplate();
   cancelWeightItemEdit();
+  renderWeightChecklist();
+}
+
+async function deleteWeightItemDirect(itemId){
+  const item = weightTemplate.find(i => i.id === itemId);
+  if(!item) return;
+  const ok = confirm(`Remove "${item.name}" from your checklist?`);
+  if(!ok) return;
+  weightTemplate = weightTemplate.filter(i => i.id !== itemId);
+  delete weightChecklistLoggedMap[itemId];
+  await saveWeightTemplate();
+  if(editingWeightItemId === itemId) cancelWeightItemEdit();
   renderWeightChecklist();
 }
 
@@ -2003,13 +2042,15 @@ function computeStats(){
   const now = new Date();
   const weekAgo = new Date(); weekAgo.setDate(now.getDate()-7);
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const calWeekStart = startOfWeek(now);
 
-  let weekCount = 0, monthMinutes = 0, streak = 0;
+  let weekCount = 0, weekMinutes = 0, monthMinutes = 0, streak = 0;
   const dateSet = new Set(entries.map(e => e.date));
 
   entries.forEach(e => {
     const d = new Date(e.date + 'T00:00:00');
     if(d >= weekAgo) weekCount++;
+    if(d >= calWeekStart) weekMinutes += Number(e.duration || 0);
     if(d >= monthStart) monthMinutes += Number(e.duration || 0);
   });
 
@@ -2030,14 +2071,22 @@ function computeStats(){
     }
   }
 
-  return { weekCount, monthHours: (monthMinutes/60).toFixed(1), streak };
+  return { weekCount, weekMinutes, monthMinutes, streak };
+}
+
+function formatHM(totalMinutes){
+  const mins = Math.round(Number(totalMinutes) || 0);
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${h}:${String(m).padStart(2,'0')}`;
 }
 
 function renderStats(){
   const s = computeStats();
   $('statsRow').innerHTML = `
     <div class="stat"><div class="val num">${s.weekCount}</div><div class="lbl">Last 7 days</div></div>
-    <div class="stat"><div class="val num">${s.monthHours}h</div><div class="lbl">This month</div></div>
+    <div class="stat"><div class="val num">${formatHM(s.weekMinutes)}</div><div class="lbl">This week</div></div>
+    <div class="stat"><div class="val num">${formatHM(s.monthMinutes)}</div><div class="lbl">This month</div></div>
     <div class="stat"><div class="val num">${s.streak}</div><div class="lbl">Day streak</div></div>
   `;
 }
