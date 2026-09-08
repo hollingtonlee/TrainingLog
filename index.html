@@ -1422,19 +1422,20 @@ function getSummaryRange(){
   if(summaryPeriod === 'week'){
     const s = startOfWeek(summaryRefDate);
     const e = endOfWeek(summaryRefDate);
-    return { start:s, end:e, totalDays:7 };
+    return { start:s, end:e };
   }
   const s = startOfMonth(summaryRefDate);
   const e = endOfMonth(summaryRefDate);
-  return { start:s, end:e, totalDays:e.getDate() };
+  return { start:s, end:e };
 }
 
 function fmtRangeLabel(range){
   if(summaryPeriod === 'week'){
-    const sameMonth = range.start.getMonth() === range.end.getMonth();
-    const startStr = range.start.toLocaleDateString(undefined, { month:'short', day:'numeric' });
-    const endStr = range.end.toLocaleDateString(undefined, sameMonth ? { day:'numeric', year:'numeric' } : { month:'short', day:'numeric', year:'numeric' });
-    return `${startStr} – ${endStr}`;
+    const s = range.start, e = range.end;
+    const startStr = `${s.getMonth()+1}/${s.getDate()}`;
+    const endStr = `${e.getMonth()+1}/${e.getDate()}`;
+    const yearSuffix = s.getFullYear() !== e.getFullYear() ? `/${e.getFullYear()}` : '';
+    return `${startStr}-${endStr}${yearSuffix}`;
   }
   return summaryRefDate.toLocaleDateString(undefined, { month:'long', year:'numeric' });
 }
@@ -1483,7 +1484,6 @@ function renderSummary(){
       <div class="summary-stats">
         <div class="summary-stat"><div class="val num">0</div><div class="lbl">Sessions</div></div>
         <div class="summary-stat"><div class="val num">0h</div><div class="lbl">Total time</div></div>
-        <div class="summary-stat"><div class="val num">0/${range.totalDays}</div><div class="lbl">Active days</div></div>
       </div>
       <div class="summary-empty">No sessions logged in this period.</div>`;
     return;
@@ -1492,7 +1492,6 @@ function renderSummary(){
   let totalMinutes = 0;
   const byCat = { strength:{count:0,minutes:0}, cardio:{count:0,minutes:0}, mobility:{count:0,minutes:0}, other:{count:0,minutes:0} };
   const exerciseCounts = new Map();
-  const activeDaySet = new Set();
 
   inRange.forEach(e => {
     const mins = Number(e.duration || 0);
@@ -1500,7 +1499,6 @@ function renderSummary(){
     const cat = byCat[e.category] ? e.category : 'other';
     byCat[cat].count++;
     byCat[cat].minutes += mins;
-    activeDaySet.add(e.date);
     const key = e.name.trim().toLowerCase();
     const prev = exerciseCounts.get(key);
     exerciseCounts.set(key, { name: e.name, count: (prev ? prev.count : 0) + 1 });
@@ -1514,7 +1512,6 @@ function renderSummary(){
     <div class="summary-stats">
       <div class="summary-stat"><div class="val num">${inRange.length}</div><div class="lbl">Session${inRange.length===1?'':'s'}</div></div>
       <div class="summary-stat"><div class="val num">${hoursDisplay}</div><div class="lbl">Total time</div></div>
-      <div class="summary-stat"><div class="val num">${activeDaySet.size}/${range.totalDays}</div><div class="lbl">Active days</div></div>
     </div>
     <div class="summary-section-label">By category</div>`;
 
