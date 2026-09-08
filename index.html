@@ -146,6 +146,28 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
+    gap:10px;
+  }
+  .day-toggle-btn{
+    background:none;
+    border:none;
+    color:inherit;
+    font:inherit;
+    text-transform:inherit;
+    letter-spacing:inherit;
+    padding:0;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex:1;
+    min-width:0;
+    text-align:left;
+  }
+  .day-toggle-btn:active{opacity:0.7;}
+  .day-toggle-arrow{
+    color:var(--ink-faint);
+    font-size:16px;
+    flex-shrink:0;
   }
   .day-delete-btn{
     background:var(--surface-2);
@@ -232,6 +254,59 @@
     white-space:nowrap;
     margin-left:12px;
   }
+
+  .screen{
+    position:fixed;
+    inset:0;
+    background:var(--bg);
+    max-width:640px;
+    margin:0 auto;
+    overflow-y:auto;
+    z-index:80;
+    display:none;
+  }
+  .screen.open{ display:block; }
+  .screen-head{
+    position:sticky;
+    top:0;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    z-index:1;
+  }
+  .screen-head button{
+    background:none;
+    border:none;
+    color:var(--steel);
+    font-size:15px;
+    font-weight:600;
+    font-family:inherit;
+    padding:4px 0;
+  }
+  .screen-head h2{
+    color:var(--ink);
+    font-size:17px;
+    margin:0;
+  }
+  .screen-body{ padding:20px; padding-bottom:60px; color:var(--ink-dim); line-height:1.55; }
+  .guide-body h3{ color:var(--ink); font-size:16px; margin:26px 0 8px; }
+  .guide-body h3:first-child{ margin-top:0; }
+  .guide-body p{ margin:0 0 12px; }
+  .guide-body ul{ margin:0 0 14px; padding-left:22px; }
+  .guide-body li{ margin-bottom:8px; }
+  .guide-body b{ color:var(--ink); font-weight:600; }
+  .guide-body code{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--ink);
+    padding:1px 6px;
+    border-radius:5px;
+    font-size:0.92em;
+  }
+  .guide-body .lede{ font-style:italic; color:var(--ink-faint); margin-top:-4px; }
 
   .entry{
     display:flex;
@@ -810,7 +885,7 @@
     <button id="btnWeights" aria-label="Weight session checklist" style="background:var(--surface-2); border:1px solid var(--border); color:var(--ink); font-size:16px; font-weight:600; width:38px; height:38px; border-radius:8px; font-family:inherit; display:flex; align-items:center; justify-content:center;">🏋️</button>
     <button id="btnSummary" aria-label="View summary" style="background:var(--surface-2); border:1px solid var(--border); color:var(--ink); font-size:16px; font-weight:600; width:38px; height:38px; border-radius:8px; font-family:inherit; display:flex; align-items:center; justify-content:center;">📊</button>
     <button id="btnTheme" aria-label="Change color palette" style="background:var(--surface-2); border:1px solid var(--border); color:var(--ink); font-size:17px; font-weight:600; width:38px; height:38px; border-radius:8px; font-family:inherit; display:flex; align-items:center; justify-content:center;">🎨</button>
-    <a href="Training-Log-User-Guide.html" target="_blank" rel="noopener" aria-label="Open user guide" style="background:var(--surface-2); border:1px solid var(--border); color:var(--ink); font-size:16px; font-weight:600; width:38px; height:38px; border-radius:8px; font-family:inherit; display:flex; align-items:center; justify-content:center; text-decoration:none;">📖</a>
+    <button id="btnGuide" aria-label="Open user guide" style="background:var(--surface-2); border:1px solid var(--border); color:var(--ink); font-size:16px; font-weight:600; width:38px; height:38px; border-radius:8px; font-family:inherit; display:flex; align-items:center; justify-content:center;">📖</button>
   </div>
 </header>
 
@@ -826,6 +901,11 @@
   <button id="btnSortOrder" class="sort-btn">
     <span id="sortLabel">Newest first</span><span id="sortArrow">▾</span>
   </button>
+</div>
+
+<div class="list-toolbar" style="padding-top:8px; justify-content:flex-start; gap:8px;">
+  <button id="btnExpandAll" class="sort-btn">Expand all</button>
+  <button id="btnCollapseAll" class="sort-btn">Collapse all</button>
 </div>
 
 <main id="main"></main>
@@ -1065,6 +1145,68 @@
   </div>
 
   <div id="summaryBody"></div>
+</div>
+
+<div class="screen" id="guideScreen">
+  <div class="screen-head">
+    <button id="guideBack">&larr; Back</button>
+    <h2>User Guide</h2>
+  </div>
+  <div class="screen-body guide-body">
+    <p class="lede">A quick reference for everything the app can do.</p>
+
+    <h3>Logging a session</h3>
+    <p>Tap <b>+ Add workout</b> and fill in:</p>
+    <ul>
+      <li>Name — e.g. "Chest Press" or "Indoor Bike"</li>
+      <li>Category — Strength, Cardio, Mobility, or Other</li>
+      <li>Date, Duration, and Body weight (optional)</li>
+      <li>Sets / Reps</li>
+      <li>Weight/Distance — a number plus a unit dropdown (lbs, kg, miles, meters, or yds). Use it for weight lifted or distance covered — e.g. <code>2100</code> + <code>meters</code> for rowing.</li>
+      <li>Notes</li>
+    </ul>
+    <p>Tap <b>📋 Copy from previous</b> inside the form to pre-fill everything from something you've logged before, then just adjust the date.</p>
+
+    <h3>Editing or deleting a session</h3>
+    <p>Tap any entry in your log to open it for editing. A red <b>Delete entry</b> button sits at the bottom of that screen.</p>
+    <p>To delete an entire day at once, tap the <b>🗑</b> icon next to that day's heading (TODAY, YESTERDAY, etc.). You'll get a confirmation first — this can't be undone.</p>
+
+    <h3>Weight session checklist 🏋️</h3>
+    <p>For gym days with many exercises, tap the <b>🏋️</b> icon in the header instead of logging each one through the form.</p>
+    <ul>
+      <li>Check a box → instantly logs that exercise to today with its saved weight/sets/reps.</li>
+      <li>Uncheck → removes that logged entry.</li>
+      <li>Reopen later the same day → already-checked items stay checked, so you can pick up mid-session.</li>
+      <li>Tap <b>✎</b> next to any exercise to edit its weight, sets, reps, or remove it from the list.</li>
+      <li><b>+ Add exercise</b> adds a new move to your checklist.</li>
+    </ul>
+    <p>This list is a reusable template, separate from your actual log — checking it off doesn't use it up.</p>
+
+    <h3>Reading your log</h3>
+    <ul>
+      <li>Days with more than one session get a vertical line connecting them, so you can see at a glance you did several things that day.</li>
+      <li>A day with 2+ exercises logged via the weights checklist collapses into one row: "🏋️ Weight session · N exercises." Tap it to expand or collapse.</li>
+      <li>Tap the ▾/▸ arrow next to any day's heading to collapse or expand that whole day.</li>
+      <li>Use <b>Expand all</b> / <b>Collapse all</b> above the list to do that for every day at once.</li>
+      <li>Tap <b>Newest first / Oldest first</b> to flip the sort order.</li>
+      <li>The stats bar shows sessions in the last 7 days, hours this month, and your current day streak.</li>
+      <li>Tap <b>📊</b> for a fuller summary broken down by period.</li>
+    </ul>
+
+    <h3>Profiles</h3>
+    <p>Tap the <b>Me ▾</b> chip under the title to switch between or create separate training logs — handy if more than one person shares the app.</p>
+
+    <h3>Backup &amp; restore</h3>
+    <p>Tap <b>Backup</b> to:</p>
+    <ul>
+      <li>Export your full log as a JSON file — do this regularly, especially before switching devices.</li>
+      <li>Restore from backup by choosing a previously exported JSON file. New entries are added; anything you already have is skipped, so it's safe to re-import.</li>
+    </ul>
+    <p>If you haven't backed up in a while (or ever), the app will pop the backup screen open automatically when you launch it, as a friendly reminder.</p>
+
+    <h3>Appearance</h3>
+    <p>Tap <b>🎨</b> to change the app's color theme.</p>
+  </div>
 </div>
 
 <script>
@@ -1901,6 +2043,23 @@ function renderStats(){
 }
 
 let expandedWeightDays = new Set();
+let collapsedDays = new Set();
+
+function toggleDayCollapse(date){
+  if(collapsedDays.has(date)) collapsedDays.delete(date);
+  else collapsedDays.add(date);
+  render();
+}
+
+function expandAllDays(){
+  collapsedDays.clear();
+  render();
+}
+
+function collapseAllDays(){
+  entries.forEach(e => collapsedDays.add(e.date));
+  render();
+}
 
 function renderEntryRow(e){
   const metaParts = [];
@@ -1952,24 +2111,33 @@ function render(){
     const isMulti = dayEntries.length > 1;
     const weightEntries = dayEntries.filter(e => e.fromWeightChecklist);
     const otherEntries = dayEntries.filter(e => !e.fromWeightChecklist);
-    const isExpanded = expandedWeightDays.has(date);
+    const isWeightExpanded = expandedWeightDays.has(date);
+    const isDayCollapsed = collapsedDays.has(date);
+    const dayLabel = fmtDateHeading(date);
+    const countLabel = isDayCollapsed ? ` · ${dayEntries.length} session${dayEntries.length===1?'':'s'}` : '';
 
-    html += `<div class="day-group${isMulti ? ' multi' : ''}"><div class="day-heading"><span>${fmtDateHeading(date)}</span><button type="button" class="day-delete-btn" data-date="${date}" aria-label="Delete this day">🗑</button></div><div class="day-entries">`;
+    html += `<div class="day-group${isMulti ? ' multi' : ''}"><div class="day-heading">`;
+    html += `<button type="button" class="day-toggle-btn" data-date="${date}"><span class="day-toggle-arrow">${isDayCollapsed ? '▸' : '▾'}</span><span>${dayLabel}${countLabel}</span></button>`;
+    html += `<button type="button" class="day-delete-btn" data-date="${date}" aria-label="Delete this day">🗑</button></div>`;
 
-    otherEntries.forEach(e => { html += renderEntryRow(e); });
+    if(!isDayCollapsed){
+      html += `<div class="day-entries">`;
+      otherEntries.forEach(e => { html += renderEntryRow(e); });
 
-    if(weightEntries.length === 1){
-      html += renderEntryRow(weightEntries[0]);
-    } else if(weightEntries.length > 1){
-      if(isExpanded){
-        html += `<div class="weight-session-summary" data-date="${date}">🏋️ Weight session · ${weightEntries.length} exercises<span class="weight-session-toggle">▴ Collapse</span></div>`;
-        weightEntries.forEach(e => { html += renderEntryRow(e); });
-      } else {
-        html += `<div class="weight-session-summary" data-date="${date}">🏋️ Weight session · ${weightEntries.length} exercises<span class="weight-session-toggle">▾ Expand</span></div>`;
+      if(weightEntries.length === 1){
+        html += renderEntryRow(weightEntries[0]);
+      } else if(weightEntries.length > 1){
+        if(isWeightExpanded){
+          html += `<div class="weight-session-summary" data-date="${date}">🏋️ Weight session · ${weightEntries.length} exercises<span class="weight-session-toggle">▴ Collapse</span></div>`;
+          weightEntries.forEach(e => { html += renderEntryRow(e); });
+        } else {
+          html += `<div class="weight-session-summary" data-date="${date}">🏋️ Weight session · ${weightEntries.length} exercises<span class="weight-session-toggle">▾ Expand</span></div>`;
+        }
       }
+      html += `</div>`;
     }
 
-    html += `</div></div>`;
+    html += `</div>`;
   });
 
   main.innerHTML = html;
@@ -1978,6 +2146,9 @@ function render(){
 
   main.querySelectorAll('.entry').forEach(el => {
     el.addEventListener('click', () => openEdit(el.dataset.id));
+  });
+  main.querySelectorAll('.day-toggle-btn').forEach(el => {
+    el.addEventListener('click', () => toggleDayCollapse(el.dataset.date));
   });
   main.querySelectorAll('.weight-session-summary').forEach(el => {
     el.addEventListener('click', () => toggleWeightDayExpand(el.dataset.date));
@@ -2374,6 +2545,11 @@ $('btnCloseCopy').addEventListener('click', closeCopySheet);
 $('copySearch').addEventListener('input', () => renderCopyList($('copySearch').value));
 
 $('btnSortOrder').addEventListener('click', toggleSortOrder);
+$('btnExpandAll').addEventListener('click', expandAllDays);
+$('btnCollapseAll').addEventListener('click', collapseAllDays);
+
+$('btnGuide').addEventListener('click', () => $('guideScreen').classList.add('open'));
+$('guideBack').addEventListener('click', () => $('guideScreen').classList.remove('open'));
 
 $('btnWeights').addEventListener('click', openWeightsSheet);
 $('overlayWeights').addEventListener('click', closeWeightsSheet);
