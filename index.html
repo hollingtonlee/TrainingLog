@@ -919,14 +919,16 @@
 
 <div class="list-toolbar">
   <div class="list-toolbar-label" id="toolbarLabel"></div>
+</div>
+
+<div class="list-toolbar" style="padding-top:8px; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+  <div style="display:flex; gap:8px;">
+    <button id="btnExpandAll" class="sort-btn">Expand all</button>
+    <button id="btnCollapseAll" class="sort-btn">Collapse all</button>
+  </div>
   <button id="btnSortOrder" class="sort-btn">
     <span id="sortLabel">Newest first</span><span id="sortArrow">▾</span>
   </button>
-</div>
-
-<div class="list-toolbar" style="padding-top:8px; justify-content:flex-start; gap:8px;">
-  <button id="btnExpandAll" class="sort-btn">Expand all</button>
-  <button id="btnCollapseAll" class="sort-btn">Collapse all</button>
 </div>
 
 <main id="main"></main>
@@ -1621,6 +1623,8 @@ async function loadEntries(){
   }catch(e){
     entries = [];
   }
+  // start with a clean, collapsed list — user expands whichever day they want to review
+  collapsedDays = new Set(entries.map(e => e.date));
   render();
 }
 
