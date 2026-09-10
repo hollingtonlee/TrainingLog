@@ -592,6 +592,17 @@
     position:relative;
   }
   .entry:active{transform:translateY(1px); box-shadow:none;}
+  .entry-delete{
+    background:none;
+    border:none;
+    color:var(--danger);
+    flex-shrink:0;
+    align-self:flex-start;
+    padding:6px;
+    display:flex;
+  }
+  .entry-delete svg{width:16px; height:16px;}
+  .entry-delete:active{opacity:0.6;}
   .entry .bar{
     width:3px;
     align-self:stretch;
@@ -1357,12 +1368,18 @@
   <div id="weightList" style="margin-top:10px;"></div>
 
   <button type="button" id="btnAddWeightItem" class="btn btn-secondary" style="width:100%; margin-top:14px;">+ Add exercise</button>
+  <button type="button" id="btnCopyWeightList" class="btn btn-secondary" style="width:100%; margin-top:10px; display:none;">Copy list from another profile</button>
+
+  <div id="copyWeightPanel" style="display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--border);">
+    <div style="font-weight:600; font-size:14px; margin-bottom:10px; color:var(--ink-dim);">Choose a list to copy</div>
+    <div id="copyWeightList"></div>
+  </div>
 
   <div id="weightItemForm" style="display:none; margin-top:18px; padding-top:18px; border-top:1px solid var(--border);">
     <div style="font-weight:600; font-size:15px; margin-bottom:12px;" id="weightFormTitle">Add exercise</div>
     <div class="field">
       <label>Exercise</label>
-      <input type="text" id="wfName" placeholder="e.g. Seated Crunch">
+      <input type="text" id="wfName" placeholder="e.g. Bench Press">
     </div>
     <div class="row2">
       <div class="row-labels cols2">
@@ -1499,6 +1516,7 @@
       <li>Reopen later the same day → already-checked items stay checked, so you can pick up mid-session.</li>
       <li>Tap <b><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg></b> next to any exercise to edit its weight, sets, or reps. Tap <b><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></b> to remove it from the list right away (with a quick confirmation).</li>
       <li><b>+ Add exercise</b> adds a new move to your checklist.</li>
+      <li>Each profile starts with an empty checklist, so you build the list to match that person's own routine. If another profile already has a list set up, <b>Copy list from another profile</b> appears so you can start from theirs instead of building from scratch — handy when adding a second person with a similar plan.</li>
     </ul>
     <p>This list is a reusable template, separate from your actual log — checking it off doesn't use it up.</p>
 
@@ -1506,6 +1524,7 @@
     <ul>
       <li>Days with more than one session get a vertical line connecting them, so you can see at a glance you did several things that day.</li>
       <li>A day with 2+ exercises logged via the weights checklist collapses into one row: "🏋️ Weight session · N exercises." Tap it to expand or collapse.</li>
+      <li>Once expanded, each exercise has an <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg> on the right — tap it to remove just that exercise from the day's log (with a quick confirmation).</li>
       <li>Tap the ▾/▸ arrow next to any day's heading to collapse or expand that whole day.</li>
       <li>Use <b>Expand all</b> / <b>Collapse all</b> above the list to do that for every day at once.</li>
       <li>Tap <b>Newest first / Oldest first</b> to flip the sort order.</li>
@@ -1517,10 +1536,11 @@
     <p>Tap the <b>Me ▾</b> chip under the title to switch between or create separate training logs — handy if more than one person shares the app.</p>
 
     <h3>Backup &amp; restore</h3>
-    <p>Tap <b>Backup</b> to:</p>
+    <p>Tap <b>Backup</b> to export or restore your data:</p>
     <ul>
-      <li>Export your full log as a JSON file — do this regularly, especially before switching devices.</li>
-      <li>Restore from backup by choosing a previously exported JSON file. New entries are added; anything you already have is skipped, so it's safe to re-import.</li>
+      <li><b>Download backup (JSON)</b> — saves every profile's full log in one file, not just the one you're currently viewing. Do this regularly, and especially before switching devices.</li>
+      <li><b>Download CSV</b> — saves just the active profile's sessions, handy for opening in a spreadsheet.</li>
+      <li>Restore from backup by choosing a previously exported JSON backup file. New entries are added; anything you already have is skipped, so it's safe to re-import.</li>
     </ul>
     <p>If you haven't backed up in a while (or ever), the app will pop the backup screen open automatically when you launch it, as a friendly reminder.</p>
 
@@ -1947,29 +1967,10 @@ function unitLabel(u){
   return map[u] || 'lbs';
 }
 
-function defaultWeightTemplate(){
-  return [
-    {id:uid(), name:'Seated Crunch', weight:100, unit:'lbs', sets:3, reps:10},
-    {id:uid(), name:'Hanging Leg Lifts', weight:null, unit:'lbs', sets:3, reps:12},
-    {id:uid(), name:'Tricep machine', weight:100, unit:'lbs', sets:3, reps:12},
-    {id:uid(), name:'Seated Bicep Curl', weight:17.5, unit:'lbs', sets:3, reps:12},
-    {id:uid(), name:'Seated row', weight:85, unit:'lbs', sets:3, reps:12},
-    {id:uid(), name:'Chest Press', weight:85, unit:'lbs', sets:3, reps:10},
-    {id:uid(), name:'Shoulder Press', weight:45, unit:'lbs', sets:3, reps:12},
-    {id:uid(), name:'Assisted Dips', weight:80, unit:'lbs', sets:3, reps:12},
-    {id:uid(), name:'Assisted Pullups', weight:100, unit:'lbs', sets:3, reps:12}
-  ];
-}
-
 async function loadWeightTemplate(){
   try{
     const res = await storageGet(weightTemplateKey(activeProfileId), false);
-    if(res && res.value){
-      weightTemplate = JSON.parse(res.value);
-    } else {
-      weightTemplate = defaultWeightTemplate();
-      await saveWeightTemplate();
-    }
+    weightTemplate = res && res.value ? JSON.parse(res.value) : [];
   }catch(e){
     weightTemplate = [];
   }
@@ -1980,6 +1981,68 @@ async function saveWeightTemplate(){
     await storageSet(weightTemplateKey(activeProfileId), JSON.stringify(weightTemplate), false);
   }catch(e){
     console.error('Weight template save failed', e);
+  }
+}
+
+async function getProfilesWithWeightTemplates(){
+  const results = [];
+  for(const p of profiles){
+    if(p.id === activeProfileId) continue;
+    try{
+      const res = await storageGet(weightTemplateKey(p.id), false);
+      const list = res && res.value ? JSON.parse(res.value) : [];
+      if(list.length > 0) results.push({ id: p.id, name: p.name, count: list.length });
+    }catch(e){ /* skip */ }
+  }
+  return results;
+}
+
+async function refreshCopyWeightButton(){
+  const candidates = await getProfilesWithWeightTemplates();
+  const btn = $('btnCopyWeightList');
+  btn._candidates = candidates;
+  btn.style.display = candidates.length > 0 ? 'block' : 'none';
+  if(candidates.length === 0) closeCopyWeightPanel();
+}
+
+function renderCopyWeightList(candidates){
+  $('copyWeightList').innerHTML = candidates.map(c => `
+    <button type="button" class="profile-row" data-id="${c.id}">
+      <span class="profile-row-avatar">${initials(c.name)}</span>
+      <span class="profile-row-body">
+        <span class="profile-row-name">${escapeHtml(c.name)}</span>
+        <span class="profile-row-meta">${c.count} exercise${c.count===1?'':'s'}</span>
+      </span>
+    </button>`).join('');
+  $('copyWeightList').querySelectorAll('.profile-row').forEach(row => {
+    row.addEventListener('click', () => copyWeightListFrom(row.dataset.id));
+  });
+}
+
+function openCopyWeightPanel(){
+  renderCopyWeightList($('btnCopyWeightList')._candidates || []);
+  $('copyWeightPanel').style.display = 'block';
+}
+function closeCopyWeightPanel(){
+  $('copyWeightPanel').style.display = 'none';
+}
+
+async function copyWeightListFrom(profileId){
+  const source = getProfile(profileId);
+  if(!source) return;
+  const currentCount = weightTemplate.length;
+  const warning = currentCount > 0 ? ` This replaces your current list of ${currentCount} exercise${currentCount===1?'':'s'}.` : '';
+  const ok = confirm(`Copy ${source.name}'s exercise list?${warning}`);
+  if(!ok) return;
+  try{
+    const res = await storageGet(weightTemplateKey(profileId), false);
+    const sourceList = res && res.value ? JSON.parse(res.value) : [];
+    weightTemplate = sourceList.map(item => ({ ...item, id: uid() }));
+    await saveWeightTemplate();
+    closeCopyWeightPanel();
+    renderWeightChecklist();
+  }catch(e){
+    console.error('Copy weight list failed', e);
   }
 }
 
@@ -2004,11 +2067,14 @@ async function openWeightsSheet(){
     if(match) weightChecklistLoggedMap[item.id] = match.id;
   });
   cancelWeightItemEdit();
+  closeCopyWeightPanel();
+  await refreshCopyWeightButton();
   renderWeightChecklist();
   $('overlayWeights').classList.add('open');
   $('sheetWeights').classList.add('open');
 }
 function closeWeightsSheet(){
+  closeCopyWeightPanel();
   $('overlayWeights').classList.remove('open');
   $('sheetWeights').classList.remove('open');
 }
@@ -2407,11 +2473,14 @@ function collapseAllDays(){
   render();
 }
 
-function renderEntryRow(e){
+function renderEntryRow(e, showDelete){
   const metaParts = [];
   if(e.sets && e.reps) metaParts.push(`${e.sets}×${e.reps}`);
   if(e.weight) metaParts.push(`${e.weight} ${unitLabel(e.weightUnit)}`);
   if(e.bodyWeight) metaParts.push(`BW ${e.bodyWeight}`);
+  const deleteBtn = showDelete
+    ? `<button type="button" class="entry-delete" data-id="${e.id}" aria-label="Remove this exercise"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`
+    : '';
   return `
     <div class="entry" data-id="${e.id}">
       <div class="bar ${e.category}"></div>
@@ -2423,6 +2492,7 @@ function renderEntryRow(e){
         <div class="entry-meta">${metaParts.join(' · ')}</div>
         ${e.notes ? `<div class="entry-notes">${escapeHtml(e.notes)}</div>` : ''}
       </div>
+      ${deleteBtn}
     </div>`;
 }
 
@@ -2475,7 +2545,7 @@ function render(){
       } else if(weightEntries.length > 1){
         if(isWeightExpanded){
           html += `<div class="weight-session-summary" data-date="${date}">🏋️ Weight session · ${weightEntries.length} exercises<span class="weight-session-toggle">▴ Collapse</span></div>`;
-          weightEntries.forEach(e => { html += renderEntryRow(e); });
+          weightEntries.forEach(e => { html += renderEntryRow(e, true); });
         } else {
           html += `<div class="weight-session-summary" data-date="${date}">🏋️ Weight session · ${weightEntries.length} exercises<span class="weight-session-toggle">▾ Expand</span></div>`;
         }
@@ -2493,6 +2563,12 @@ function render(){
   main.querySelectorAll('.entry').forEach(el => {
     el.addEventListener('click', () => openEdit(el.dataset.id));
   });
+  main.querySelectorAll('.entry-delete').forEach(el => {
+    el.addEventListener('click', (evt) => {
+      evt.stopPropagation();
+      deleteLoggedEntry(el.dataset.id);
+    });
+  });
   main.querySelectorAll('.day-toggle-btn').forEach(el => {
     el.addEventListener('click', () => toggleDayCollapse(el.dataset.date));
   });
@@ -2505,6 +2581,16 @@ function render(){
       deleteDay(el.dataset.date);
     });
   });
+}
+
+async function deleteLoggedEntry(id){
+  const entry = entries.find(e => e.id === id);
+  if(!entry) return;
+  const ok = confirm(`Remove "${entry.name}" from this session?`);
+  if(!ok) return;
+  entries = entries.filter(e => e.id !== id);
+  await saveEntries();
+  render();
 }
 
 async function deleteDay(date){
@@ -2901,6 +2987,7 @@ $('btnWeights').addEventListener('click', openWeightsSheet);
 $('overlayWeights').addEventListener('click', closeWeightsSheet);
 $('btnCloseWeights').addEventListener('click', closeWeightsSheet);
 $('btnAddWeightItem').addEventListener('click', () => openWeightItemForm(null));
+$('btnCopyWeightList').addEventListener('click', openCopyWeightPanel);
 $('btnWeightFormCancel').addEventListener('click', cancelWeightItemEdit);
 $('btnWeightFormSave').addEventListener('click', saveWeightItemForm);
 $('btnWeightDelete').addEventListener('click', deleteWeightItemForm);
